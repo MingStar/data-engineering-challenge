@@ -23,7 +23,6 @@ class GuardianSpider(scrapy.Spider):
         for href in response.css('.global-navigation__section a::attr(href)').extract():
             full_url = response.urljoin(href)
             yield scrapy.Request(full_url, callback=self.parse_section_page)
-            break
 
     def parse_section_page(self, response):
         global VISITED_LOCK, visited
