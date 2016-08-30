@@ -23,20 +23,32 @@ pip3 install scrapy readability-lxml pymongo html2text cherrypy
 $ ./crawl.sh
 ```
 
-NB. for step 2 and 3, need to define the environement variable ```
-'ISENTIA_COMPOSE_MONGO_CONNECTION'``` for mongodb connection string.
+2. Setup the mongo database
 
-2. cleanse and load data to compose
+* refer to ```setup_mongo.commands.txt```
+
+
+NB. for step 3 and 4, the environment variable ```
+'ISENTIA_COMPOSE_MONGO_CONNECTION'``` needs to be defined as a MongoDB connection string.
+
+3. cleanse and load data to compose
 
 
 ```
 $ python3 cleanse_and_load.py <crawled_data.csv>
 ```
 
-3. running the API
+4. running the API
 ```
 $ python3 api_server.py
 ```
+
+### API parameters
+
+* ```keywords```: a list of keywords to search from, syntax is the same as [the $search field in Mongo $text query](https://docs.mongodb.com/manual/reference/operator/query/text/#behavior).
+* ```article_format```: can be ```html``` or ```text```, default to ```text```.
+* ```limit```: the number of articles to return, should not be bigger than 100.
+
 
 ## Approach
 * To use Scrapy to do some initial investigations to decide which sections and which attributes to crawl
@@ -47,10 +59,9 @@ $ python3 api_server.py
 ### Design Decisions:
 * Since Mongo 3 supports full text search with stemming and casing, the use of ElasticSearch was unnecessary.
 * Only HTML and text summary (using Readability and html2text) was saved in the Mongo DB on compose.io
-* The processing is split into 3 steps:
+* The data processing was split into 2 separate steps:
     1. Crawl using Scrapy, save it into a CSV file
-    1. Cleanse the data using Readability and html2text, and load it into Compose.io
-    1. Python API is put on top of Compose
+    2. Cleanse the data using Readability and html2text, and load it into Compose.io
 * Even though Scrapy has a Mongo pipeline, this was not chosen, so that the raw HTML can be scraped and saved on disk
 only.
 * Decided to host the API on my existing DigitalOcean server, instead of Amazon EC2.

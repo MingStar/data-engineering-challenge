@@ -20,8 +20,8 @@ class ApiServer(object):
             limit = int(limit)
         except ValueError:
             raise cherrypy.HTTPError(400, "Invalid value for limit")
-        if limit > 100:
-            raise cherrypy.HTTPError(400, "limit cannot be bigger than 100")
+        if not (0 < limit <= 100):
+            raise cherrypy.HTTPError(400, "Invalid value for limit")
         col = mongo_utils.get_collection()
         cursor = col.find({"$text": {"$search": keywords}}, projection_dict)
         cursor = cursor.limit(limit)

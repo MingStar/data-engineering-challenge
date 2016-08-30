@@ -1,6 +1,6 @@
 import scrapy
 import threading
-from csv_reader import load_visited
+from visited_link_reader import load_visited
 
 PROJECT_NAME = 'theguardian.com'
 
