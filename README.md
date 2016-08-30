@@ -56,7 +56,7 @@ $ python3 api_server.py
 * To investigate keyword search with stemming and casing (ElasticSearch could be an option)
 
 
-### Design Decisions:
+## Design Decisions:
 * Since Mongo 3 supports full text search with stemming and casing, the use of ElasticSearch was unnecessary.
 * Only HTML and text summary (using Readability and html2text) was saved in the Mongo DB on compose.io
 * The data processing was split into 2 separate steps:
@@ -66,7 +66,7 @@ $ python3 api_server.py
 only.
 * Decided to host the API on my existing DigitalOcean server, instead of Amazon EC2.
 
-### Log
+## Log
 * 27/Aug crawled 2,335 articles from the Guardian from my DigitalOcean server.
 * 30/Aug cleansed the text with Readability and load the cleansed text and other meta data into compose.io.
-* 30/Aug Python API implemented and deployed.
+* 30/Aug Search API implemented and deployed.
