@@ -1,15 +1,19 @@
 import sys
+import datetime
 import csv
-import ssl
 csv.field_size_limit(sys.maxsize)
 
-import datetime
-from readability import Document
+import readability
+import html2text
 from pymongo import MongoClient
 
+h2t = html2text.HTML2Text()
+h2t.ignore_images = True
+h2t.ignore_links = True
+
 def cleanse(raw_text):
-    doc = Document(raw_text)
-    return doc.summary()
+    doc = readability.Document(raw_text)
+    return doc.summary(html_partial=True)
 
 def transform_time(str):
     if str == '':
@@ -23,25 +27,30 @@ def load(article, keys, db):
         k:article[k] for k in keys
     })
 
+def transform_record(row):
+    row['html_summary'] = cleanse(row['html_raw'])
+    row['text_summary'] = h2t.handle(row['html_summary'])
+    row['published_time'] = transform_time(row['published_time'])
+    row['keywords'] = row['keywords'].split(',')
+
 def load_all(filename, db):
     with open(filename) as f:
         reader = csv.DictReader(f)
         count = 0
         for row in reader:
-            row['summary'] = cleanse(row['html_raw'])
-            row['published_time'] = transform_time(row['published_time'])
-            row['keywords'] = row['keywords'].split(',')
+            transform_record(row)
             load(row, ['link', 'section', 'headline',
                        'author', 'keywords', 'published_time',
-                       'summary'], db)
+                       'html_summary', 'text_summary'], db)
             count += 1
             if count % 100 == 0:
                 print("{} records loaded".format(count))
         print("Done! {} records loaded in total".format(count))
 
 if __name__ == '__main__':
-    import os
-    client = MongoClient(os.environ['ISENTIA_COMPOSE_MONGO_CONNECTION'], ssl_cert_reqs=ssl.CERT_NONE)
+    import os, ssl
+    client = MongoClient(os.environ['ISENTIA_COMPOSE_MONGO_CONNECTION'],
+                         ssl_cert_reqs=ssl.CERT_NONE)
     db = client.isentia
     print("Database connected")
     load_all(sys.argv[1], db)
