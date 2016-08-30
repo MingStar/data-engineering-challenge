@@ -1,11 +1,28 @@
 # Enable text search
 use admin;
-db.runCommand({setParameter:1, textSearchEnabled:true});
+db.runCommand({setParameter: 1, textSearchEnabled: true});
 
 
 # Add indexes
 use isentia;
-db.news_articles.createIndex({'link':1});
-db.news_articles.createIndex({'section': 'text', 'headline': 'text',
-                              'author':  'text', 'keywords': 'text',
-                              'text_summary': 'text'});
+db.news_articles.createIndex({'link': 1}, { unique: true});
+db.news_articles.createIndex(
+    {
+    'section': 'text',
+    'headline':'text',
+    'author': 'text',
+    'keywords': 'text',
+    'text_summary': 'text'
+    },
+    {
+      weights:
+      {
+        'section': 60,
+        'headline': 50,
+        'keywords': 50,
+        'author': 30,
+        'text_summary': 10
+      },
+      name: "TextIndex"
+    }
+);

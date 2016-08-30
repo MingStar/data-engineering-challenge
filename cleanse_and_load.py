@@ -5,7 +5,6 @@ csv.field_size_limit(sys.maxsize)
 
 import readability
 import html2text
-from pymongo import MongoClient
 
 h2t = html2text.HTML2Text()
 h2t.ignore_images = True
@@ -48,9 +47,6 @@ def load_all(filename, db):
         print("Done! {} records loaded in total".format(count))
 
 if __name__ == '__main__':
-    import os, ssl
-    client = MongoClient(os.environ['ISENTIA_COMPOSE_MONGO_CONNECTION'],
-                         ssl_cert_reqs=ssl.CERT_NONE)
-    db = client.isentia
-    print("Database connected")
+    import mongo_utils
+    db = mongo_utils.get_db()
     load_all(sys.argv[1], db)
