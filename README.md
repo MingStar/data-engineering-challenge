@@ -1,5 +1,6 @@
 # data engineering challenge
-a python solution for a Data Engineering role
+
+a solution written in Python for a data engineering challenge test
 
 ## To Run the Code
 
@@ -25,14 +26,13 @@ $ ./crawl.sh
 
 2. Setup the mongo database
 
-* refer to ```setup_mongo.commands.txt```
+* refer to ```setup_mongo.commands.txt``` in the codebase
 
 
 NB. for step 3 and 4, the environment variable ```
 'ISENTIA_COMPOSE_MONGO_CONNECTION'``` needs to be defined as a MongoDB connection string.
 
-3. cleanse and load data to compose
-
+3. cleanse data and load it to MongoDB
 
 ```
 $ python3 cleanse_and_load.py <crawled_data.csv>
@@ -46,7 +46,7 @@ $ python3 api_server.py
 ### API parameters
 
 * ```keywords```: a list of keywords to search from, syntax is the same as [the $search field in Mongo $text query](https://docs.mongodb.com/manual/reference/operator/query/text/#behavior).
-* ```article_format```: can be ```html``` or ```text```, default to ```text```.
+* ```article_format```: format can be `'html'` or `'text'`, default to ```text```.
 * ```limit```: the number of articles to return, should not be bigger than 100.
 
 
@@ -57,13 +57,13 @@ $ python3 api_server.py
 
 
 ## Design Decisions:
-* Since Mongo 3 supports full text search with stemming and casing, the use of ElasticSearch was unnecessary.
-* Only HTML and text summary (using Readability and html2text) was saved in the Mongo DB on compose.io
 * The data processing was split into 2 separate steps:
-    1. Crawl using Scrapy, save it into a CSV file
-    2. Cleanse the data using Readability and html2text, and load it into Compose.io
+    1. Crawling using Scrapy, save it into a CSV file
+    2. Cleansing the data using Readability and html2text, and load it into Compose.io
 * Even though Scrapy has a Mongo pipeline, this was not chosen, so that the raw HTML can be scraped and saved on disk
 only.
+* Only HTML and text summary (using Readability and html2text) was saved in the MongoDB, not the raw HTML.
+* Since Mongo 3 supports full text search with stemming and casing, the use of ElasticSearch was unnecessary.
 * Decided to host the API on my existing DigitalOcean server, instead of Amazon EC2.
 
 ## Log
