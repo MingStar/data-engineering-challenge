@@ -6,13 +6,9 @@ import mongo_utils
 from json_handler import json_handler
 
 class ApiServer(object):
-    def __init__(self):
-        self.db = mongo_utils.get_db()
-        pass
-
     @cherrypy.expose
     @cherrypy.tools.json_out()
-    def search(self, keywords, article_format='html', limit=10):
+    def search(self, keywords, article_format='text', limit=10):
         projection_dict = {"_id": 0}
         if article_format == "html":
             projection_dict.update({'text_summary': 0})
@@ -26,7 +22,8 @@ class ApiServer(object):
             raise cherrypy.HTTPError(400, "Invalid value for limit")
         if limit > 100:
             raise cherrypy.HTTPError(400, "limit cannot be bigger than 100")
-        cursor = self.db.news_articles.find({"$text": {"$search": keywords}}, projection_dict)
+        col = mongo_utils.get_collection()
+        cursor = col.find({"$text": {"$search": keywords}}, projection_dict)
         cursor = cursor.limit(limit)
         return list(cursor)
 
