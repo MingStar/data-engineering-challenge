@@ -20,7 +20,15 @@ class ApiServer(object):
             projection_dict.update({'html_summary': 0})
         else:
             raise cherrypy.HTTPError(400, "Invalid article format")
-        return list(self.db.news_articles.find({"$text": {"$search": keywords}}, projection_dict).limit(int(limit)))
+        try:
+            limit = int(limit)
+        except ValueError:
+            raise cherrypy.HTTPError(400, "Invalid value for limit")
+        if limit > 100:
+            raise cherrypy.HTTPError(400, "limit cannot be bigger than 100")
+        cursor = self.db.news_articles.find({"$text": {"$search": keywords}}, projection_dict)
+        cursor = cursor.limit(limit)
+        return list(cursor)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
