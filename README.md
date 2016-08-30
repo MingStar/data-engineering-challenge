@@ -19,12 +19,12 @@ pip3 install scrapy readability-lxml pymongo html2text cherrypy
 
 ### Steps to run:
 
-1. crawling:
+1 . crawling:
 ```
 $ ./crawl.sh
 ```
 
-2. Setup the mongo database
+2 . Setup the mongo database
 
 * refer to ```setup_mongo.commands.txt``` in the codebase
 
@@ -32,13 +32,13 @@ $ ./crawl.sh
 NB. for step 3 and 4, the environment variable ```
 'ISENTIA_COMPOSE_MONGO_CONNECTION'``` needs to be defined as a MongoDB connection string.
 
-3. cleanse data and load it to MongoDB
+3 . cleanse data and load it to MongoDB
 
 ```
 $ python3 cleanse_and_load.py <crawled_data.csv>
 ```
 
-4. running the API
+4 . running the API
 ```
 $ python3 api_server.py
 ```
